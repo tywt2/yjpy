@@ -1,4 +1,4 @@
-import geopy
+
 import requests
 
 from distance import getDistance

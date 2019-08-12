@@ -1,9 +1,11 @@
 import math
-with open('data.txt', "r") as f:  # 设置文件对象
-    str = f.read()  # 可以是随便对文件的操作
 
-def ComputeArea(data):
-    arr = data.split(';')
+
+def ComputeArea():
+    #arr = data.split(';')
+    with open('data.txt', "r") as f:  # 设置文件对象
+        str = f.read()  # 可以是随便对文件的操作
+    arr = str.split(';')
     arr_len = len(arr)
     if arr_len < 3:
         return 0.0
@@ -17,4 +19,4 @@ def ComputeArea(data):
     return round(math.fabs(s/2)*9101160000.085981,6)
 
 
-print(ComputeArea(str))
+ComputeArea()
