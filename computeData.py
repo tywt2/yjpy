@@ -1,6 +1,7 @@
 import json
 
 import requests
+
 from distance import getDistance
 
 url_guotu = "http://localhost:8080/GuoTu"
@@ -25,23 +26,29 @@ dlb_data = requests.request("post", url_dlb, params=params_dlb)
 dlb_json = dlb_data.json()
 
 
-def areaGuoTUPoint(dis):
-    num1 = 0
-    num2 = 0
+#
+def areaGuoTUPoint(LatObject, LonObject, distance):
+    person = 0
+    monney = 0
+    result = 0
+    idStr = ''
     for guotu in guotu_json:
-        Lat1 = guotu['t11']
-        Lon1 = guotu['t10']
-        Lat1 = float(Lat1)
-        Lon1 = float(Lon1)
-        distance = getDistance(Lat0, Lon0, Lat1, Lon1)
-        if (distance < dis):
-            num1 += float(guotu['t13'])
-            num2 += float(guotu['t14'])
-            print(guotu)
-    return 'person:'+str(num1) + ' monney:' + str(num2)
+        LatOther = guotu['t11']
+        LonOther = guotu['t10']
+        LatOther = float(LatOther)
+        LonOther = float(LonOther)
+        dis = getDistance(LatObject, LonObject, LatOther, LonOther)
+        if (dis < distance):
+            person += float(guotu['t13'])
+            monney += float(guotu['t14'])
+            idStr += str(guotu['id']) + ','
+            # print(str(guotu['id']) + ' ' + str(guotu['t13']) + ' ' + str(guotu['t14']))
+    if (not person.__eq__(0) and not monney.__eq__(0)):
+        result = '"Guott002_id":"' + idStr.rstrip(',') + '","person":"' + str(person) + '","monney":"' + str(monney)+'"'
+    return result
 
 
-def areaJTPoint(dis):
+def areaJTPoint(LatObject, LonObject, dis):
     for jiaotong in jiaotong_json:
         # 起始点经纬度
         Lat1 = jiaotong['t7']
@@ -52,8 +59,8 @@ def areaJTPoint(dis):
         Lon1 = float(Lon1)
         Lat2 = float(Lat2)
         Lon2 = float(Lon2)
-        distance = getDistance(Lat0, Lon0, Lat1, Lon1)
-        distance2 = getDistance(Lat0, Lon0, Lat2, Lon2)
+        distance = getDistance(LatObject, LonObject, Lat1, Lon1)
+        distance2 = getDistance(LatObject, LonObject, Lat2, Lon2)
         if (distance < dis):
             print(jiaotong)
         if (distance2 < dis):
@@ -61,11 +68,21 @@ def areaJTPoint(dis):
     return
 
 
-for dlb in dlb_json:
-    Lat0 = dlb['Lat']
-    Lon0 = dlb['Lon']
-    Lat0 = float(Lat0)
-    Lon0 = float(Lon0)
+def showDLB():
+    out_json = "["
+    for dlb in dlb_json:
+        Lat0 = dlb['Lat']
+        Lon0 = dlb['Lon']
+        Lat0 = float(Lat0)
+        Lon0 = float(Lon0)
+        pAndMon = areaGuoTUPoint(Lat0, Lon0, 1)
+        if (not pAndMon.__eq__('0')):
+            out_json += '{"dlb_id":"' + str(dlb['ClientID']) + '",' + pAndMon + '},'
+    out_json = out_json.rstrip(',') + "]"
+    #print(json.dumps(out_json))
+    #out_json='[{"dlb_id":"001814080001_E011181","Guott002_id":"40573","person":"5.0","monney":"12.5"},{"dlb_id":"001814080001_E011182","Guott002_id":"40573","person":"5.0","monney":"12.5"}]'
+    print(out_json)
+    # print(str(dlb['ClientID']) + ' ' + pAndMon)
 
-    print(str(dlb['ClientID']) + '-' + areaGuoTUPoint(1))
-    # print(areaJTPoint(50))
+
+showDLB()

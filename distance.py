@@ -16,7 +16,6 @@ def getDistance(lat1, lng1, lat2, lng2):
     s = s * EARTH_REDIUS
     return s
 
-print(getDistance(37.571111,112.154167,37.581111,112.164167))
-
+#print(getDistance(37.571111,112.154167,37.581111,112.164167))
 #print(geopy.distance.geodesic((37.571111,112.154167), (37.581111,112.164167)).m) #计算两个坐标直线距离
 #print(geopy.distance.geodesic((37.571111,112.154167), (37.581111,112.164167)).km) #计算两个坐标直线距离
