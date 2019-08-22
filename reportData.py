@@ -1,4 +1,6 @@
 # from sys import argv
+from sys import argv
+
 import requests
 
 from distance import getDistance
@@ -11,6 +13,8 @@ GuoTu_data = requests.request("post", GuoTu_URL, params=GuoTu_params)
 GuoTu_json = GuoTu_data.json()
 
 idList = []
+
+
 def GuoTuAreaPoint(LatObject, LonObject, distance):
     personNum = 0
     monneyNum = 0
@@ -40,12 +44,11 @@ def GuoTuAreaPoint(LatObject, LonObject, distance):
                              + '","tel":"' + str(guotu['t9']) \
                              + '","Lon":"' + str(guotu['t10']) \
                              + '","Lat":"' + str(guotu['t11']) \
-                             + '","personNum":"' + str(guotu['t13']) \
-                             + '","monneyNum":"' + str(guotu['t14']) \
+                             + '","pNum":"' + str(guotu['t13']) \
+                             + '","mNum":"' + str(guotu['t14']) \
                              + '"},'
     multidStr = multidStr.rstrip(',') + ']'
-    if (not personNum.__eq__(0) and not monneyNum.__eq__(0)):
-        result = '"Guott002_id":{0},"personNum":{1},"monneyNum":{2}'.format(multidStr, personNum, monneyNum)
+    result = '"Guott002_id":{0},"personNum":{1},"monneyNum":{2}'.format(multidStr, personNum, monneyNum)
     return result
 
 
@@ -63,8 +66,7 @@ def ReportDLBGuoTuPoint(distance, Identifier):
         Lat = float(Lat)
         Lon = float(Lon)
         GuotuStr = GuoTuAreaPoint(Lat, Lon, distance)
-        if (not GuotuStr.__eq__('0')):
-            out_json += '{"ClientID":"' + report['ClientID'] \
+        out_json += '{"ClientID":"' + report['ClientID'] \
                         + '","Lon":"' + report['Lon'] \
                         + '","Lat":"' + report['Lat'] \
                         + '","Clienttype":"' + report['Clienttype'] \
@@ -77,9 +79,13 @@ def ReportDLBGuoTuPoint(distance, Identifier):
     print(out_json)
 
 
+def Result():
+    distance = argv[1]
+    Identifier = argv[2]
+    distance = int(distance)
+    ReportDLBGuoTuPoint(distance, Identifier)
+
+
 if __name__ == '__main__':
-    # distance = argv[1]
-    # Identifier = argv[2]
-    # distance = int(distance)
-    # ReportDLBGuoTuPoint(distance, Identifier)
+    # Result()
     ReportDLBGuoTuPoint(1, '14080041600000_20190814094524')
