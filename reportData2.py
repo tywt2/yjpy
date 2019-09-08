@@ -5,22 +5,15 @@ import requests
 
 from distance import getDistance
 
-GuoTu_URL = "http://localhost:8080/GuoTu"
-GuoTu_params = {
-    'departmentcode': 'Guott003'
-}
-GuoTu_data = requests.request("post", GuoTu_URL, params=GuoTu_params)
-GuoTu_json = GuoTu_data.json()
-
+distance = 1
 idList = []
 
 
-def GuoTuAreaPoint(LatObject, LonObject, distance):
+def GuoTuAreaPoint(LatObject, LonObject, GuoTu_JSON):
     personNum = 0
     monneyNum = 0
-    result = 0
     multidStr = '['
-    for guotu in GuoTu_json:
+    for guotu in GuoTu_JSON:
         LatOther = guotu['t11']
         LonOther = guotu['t10']
         LatOther = float(LatOther)
@@ -52,40 +45,48 @@ def GuoTuAreaPoint(LatObject, LonObject, distance):
     return result
 
 
-def ReportDLBGuoTuPoint(distance, identifier):
-    DLBReport_URL = "http://localhost:8080/report"
+def ReportDLBGuoTuPoint(identifier, departmentcode):
     DLBReport_params = {
         'identifier': identifier
     }
-    DLBReport_Data = requests.request("post", DLBReport_URL, params=DLBReport_params)
+    DLBReport_Data = requests.request("post", "http://localhost:8080/report", params=DLBReport_params)
     DLBReport_JSON = DLBReport_Data.json()
+    # GuoTu_params = {
+    #     'departmentcode': departmentcode
+    # }
+    # GuoTu_data = requests.request("post", "http://localhost:8080/GuoTu", params=GuoTu_params)
+    GuoTu_params = {
+        'identifier': identifier,
+        'departmentcode': departmentcode
+    }
+    GuoTu_data = requests.request("post", "http://localhost:8080/GuoTuArea", params=GuoTu_params)
+    GuoTu_JSON = GuoTu_data.json()
     out_json = "["
     for report in DLBReport_JSON:
         Lat = report['Lat']
         Lon = report['Lon']
         Lat = float(Lat)
         Lon = float(Lon)
-        GuotuStr = GuoTuAreaPoint(Lat, Lon, distance)
+        GuotuStr = GuoTuAreaPoint(Lat, Lon, GuoTu_JSON)
         out_json += '{"ClientID":"' + report['ClientID'] \
-                        + '","Lon":"' + report['Lon'] \
-                        + '","Lat":"' + report['Lat'] \
-                        + '","Clienttype":"' + report['Clienttype'] \
-                        + '","ClientStatus":"' + report['ClientStatus'] \
-                        + '","ClientAddress":"' + report['ClientAddress'] \
-                        + '","ClientPerson":"' + report['ClientPerson'] \
-                        + '","ClientTel":"' + report['ClientTel'] \
-                        + '",' + GuotuStr + '},'
+                    + '","Lon":"' + report['Lon'] \
+                    + '","Lat":"' + report['Lat'] \
+                    + '","Clienttype":"' + report['Clienttype'] \
+                    + '","ClientStatus":"' + report['ClientStatus'] \
+                    + '","ClientAddress":"' + report['ClientAddress'] \
+                    + '","ClientPerson":"' + report['ClientPerson'] \
+                    + '","ClientTel":"' + report['ClientTel'] \
+                    + '",' + GuotuStr + '},'
     out_json = out_json.rstrip(',') + "]"
     print(out_json)
 
 
 def Result():
-    distance = argv[1]
-    Identifier = argv[2]
-    distance = int(distance)
-    ReportDLBGuoTuPoint(distance, Identifier)
+    identifier = argv[1]
+    departmentcode = argv[2]
+    ReportDLBGuoTuPoint(identifier, departmentcode)
 
 
 if __name__ == '__main__':
-    #Result()
-    ReportDLBGuoTuPoint(1, '14080041600000_20190814094524')
+    Result()
+    #ReportDLBGuoTuPoint('14080041600000_20190814094524', 'Guott001')
